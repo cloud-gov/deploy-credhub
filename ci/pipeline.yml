@@ -2,9 +2,7 @@
 jobs:
 
 - name: configure-pipeline
-  serial_groups:
-  - mirror
-  - proxy
+  serial_groups: [staging, production]
   plan:
   - in_parallel:
     - get: pipeline-config
