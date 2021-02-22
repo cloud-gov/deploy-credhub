@@ -1,0 +1,137 @@
+---
+jobs:
+
+- name: configure-pipeline
+  serial_groups:
+  - mirror
+  - proxy
+  plan:
+  - in_parallel:
+    - get: pipeline-config
+      trigger: true
+    - get: pipeline-source
+      trigger: true
+      params: {depth: 1}
+  - set_pipeline: self
+    file: pipeline-source/ci/pipeline.yml
+    var_files: 
+      - pipeline-config/credhub.yml
+
+- name: deploy-staging
+  serial_groups: [staging]
+  plan:
+  - in_parallel:
+    - get: deploy-config
+      trigger: true
+    - get: release
+      trigger: true
+    - get: stemcell
+      trigger: true
+    - get: terraform-yaml
+  - put: staging-deployment
+    params: &deploy-params
+      manifest: deploy-config/cluster/credhub.yml
+      stemcells:
+      - stemcell/*.tgz
+      # ops_files:
+      # - deploy-config/operations/acls.yml
+      vars_files:
+      - deploy-config/variables/staging.yml
+      - deploy-config/variables/postgres-tls.yml
+      - terraform-yaml/state.yml
+  # - task: smoke-test
+  #   file: concourse-config/ci/smoke-test.yml
+  #   params:
+  #     ATC_URL: https://ci.fr-stage.cloud.gov
+  #     BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
+  #     BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Credhub on staging
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Credhub on staging
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
+resources:
+
+- name: pipeline-config
+  type: s3-iam
+  tags: [iaas]
+  source:
+    bucket: ((concourse-creds-bucket))
+    region_name: ((concourse-creds-bucket-region))
+    versioned_file: credhub.yml
+
+- name: pipeline-source
+  type: git
+  source:
+    uri: https://github.com/cloud-gov/deploy-credhub
+    branch: initial-deploy
+    paths: [ci/pipeline.yml]
+
+- name: deploy-config
+  type: git
+  source:
+    uri: https://github.com/cloud-gov/deploy-credhub
+    branch: initial-deploy
+    paths: [cluster/*, operations/*, variables/*]
+
+- name: stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-aws-xen-hvm-ubuntu-xenial-go_agent
+
+- name: release
+  type: github-release
+  source:
+    owner: pivotal
+    repository: credhub-release
+
+- name: staging-deployment
+  type: bosh-deployment
+  source:
+    target: ((staging-deployment-bosh-target))
+    client: ci
+    client_secret: ((tooling_bosh_uaa_ci_client_secret))
+    deployment: ((staging-deployment-bosh-deployment))
+    ca_cert: ((common_ca_cert_store))
+
+- name: slack
+  type: slack-notification-docker
+  source:
+    url: ((slack-webhook-url))
+
+- name: terraform-yaml
+  type: s3-iam
+  source:
+    bucket: ((tf-state-bucket))
+    versioned_file: ((tf-state-file))
+    region_name: ((aws-region))
+
+resource_types:
+- name: slack-notification-docker
+  type: registry-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+
+- name: bosh-deployment
+  type: registry-image
+  source:
+    repository: cloudfoundry/bosh-deployment-resource
+
+- name: s3-iam
+  type: registry-image
+  source:
+    repository: 18fgsa/s3-resource

@@ -1,0 +1,81 @@
+---
+name: credhub
+
+releases:
+  - name: credhub
+    version: latest
+  - name: bpm
+    version: latest
+
+instance_groups:
+  - name: credhub
+    instances: ((num_instances))
+    azs: ((azs))
+    networks: [{ name: ((network_name)) }]
+    stemcell: xenial
+    vm_type: ((credhub_vm_type))
+    jobs:
+      - name: bpm
+        release: bpm
+      - name: credhub
+        release: credhub
+        properties:
+          bpm:
+            enabled: true
+          credhub:
+            # tls: ((credhub-tls))
+            authorization:
+              acls:
+                enabled: true
+              permissions:
+                - path: /*
+                  actors: ["uaa-client:credhub_admin_client"]
+                  operations: [read, write, delete, read_acl, write_acl]
+            authentication:
+              uaa:
+                url: &uaa-url https://opsuaa.fr.cloud.gov
+                verification_key: ((/toolingbosh/opsuaa/uaa_jwt_signing_key.public_key))
+                ca_certs:
+                  - ((/master-bosh-ca))
+                enabled: true
+              mutual_tls:
+                trusted_cas: [((/master-bosh-ca))]
+            data_storage:
+              type: postgres
+              username: ((terraform_outputs.staging_credhub_rds_username))
+              password: ((terraform_outputs.staging_credhub_rds_password))
+              host: ((terraform_outputs.staging_credhub_rds_host))
+              port: ((terraform_outputs.staging_credhub_rds_port))
+              database: credhub
+              require_tls: true
+              tls_ca: ((postgres_ca_cert))
+            encryption:
+              keys:
+                - provider_name: int
+                  key_properties:
+                    encryption_password: ((credhub-encryption-password))
+                  active: true
+              providers:
+                - name: int
+                  type: internal
+
+variables:
+  - name: credhub-encryption-password
+    type: password
+    options:
+      length: 40
+  - name: credhub-admin-client-password
+    type: password
+  - name: credhub-admin-user-password
+    type: password
+
+stemcells:
+  - alias: xenial
+    os: ubuntu-xenial
+    version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  update_watch_time: 120000
+  canary_watch_time: 120000
