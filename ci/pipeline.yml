@@ -37,6 +37,7 @@ jobs:
       - deploy-config/variables/staging.yml
       - deploy-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
+      dry_run: true
   # - task: smoke-test
   #   file: concourse-config/ci/smoke-test.yml
   #   params:
@@ -113,6 +114,7 @@ resources:
 
 - name: terraform-yaml
   type: s3-iam
+  tags: [iaas]
   source:
     bucket: ((tf-state-bucket))
     versioned_file: ((tf-state-file))
@@ -120,16 +122,16 @@ resources:
 
 resource_types:
 - name: slack-notification-docker
-  type: registry-image
+  type: docker-image
   source:
     repository: cfcommunity/slack-notification-resource
 
 - name: bosh-deployment
-  type: registry-image
+  type: docker-image
   source:
     repository: cloudfoundry/bosh-deployment-resource
 
 - name: s3-iam
-  type: registry-image
+  type: docker-image
   source:
     repository: 18fgsa/s3-resource
