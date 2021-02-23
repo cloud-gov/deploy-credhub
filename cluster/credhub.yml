@@ -1,5 +1,5 @@
 ---
-name: credhub
+name: ((deployment_name))
 
 releases:
   - name: credhub
