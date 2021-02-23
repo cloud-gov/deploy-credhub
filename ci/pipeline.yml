@@ -45,24 +45,24 @@ jobs:
   #     ATC_URL: https://ci.fr-stage.cloud.gov
   #     BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
   #     BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
-  on_failure:
-    put: slack
-    params:
-      text: |
-        :x: FAILED to deploy Credhub on staging
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
-  on_success:
-    put: slack
-    params:
-      text: |
-        :white_check_mark: Successfully deployed Credhub on staging
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
+  # on_failure:
+  #   put: slack
+  #   params:
+  #     text: |
+  #       :x: FAILED to deploy Credhub on staging
+  #       <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+  #     channel: ((slack-channel))
+  #     username: ((slack-username))
+  #     icon_url: ((slack-icon-url))
+  # on_success:
+  #   put: slack
+  #   params:
+  #     text: |
+  #       :white_check_mark: Successfully deployed Credhub on staging
+  #       <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+  #     channel: ((slack-channel))
+  #     username: ((slack-username))
+  #     icon_url: ((slack-icon-url))
 
 resources:
 
