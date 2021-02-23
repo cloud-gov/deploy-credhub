@@ -21,6 +21,7 @@ jobs:
   - in_parallel:
     - get: deploy-config
       trigger: true
+      params: {depth: 1}
     - get: release
       trigger: true
     - get: stemcell
