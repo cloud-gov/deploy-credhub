@@ -23,7 +23,6 @@ instance_groups:
           bpm:
             enabled: true
           credhub:
-            # tls: ((credhub-tls))
             authorization:
               acls:
                 enabled: true
@@ -33,7 +32,7 @@ instance_groups:
                   operations: [read, write, delete, read_acl, write_acl]
             authentication:
               uaa:
-                url: &uaa-url https://opsuaa.fr.cloud.gov
+                url: https://opsuaa.fr.cloud.gov
                 verification_key: ((/toolingbosh/opsuaa/uaa_jwt_signing_key.public_key))
                 ca_certs:
                   - ((/master-bosh-ca))
