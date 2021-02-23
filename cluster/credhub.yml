@@ -9,7 +9,7 @@ releases:
 
 instance_groups:
   - name: credhub
-    instances: ((num_instances))
+    instances: ((instances))
     azs: ((azs))
     networks: [{ name: ((network_name)) }]
     stemcell: xenial
