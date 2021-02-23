@@ -1,5 +1,5 @@
 deployment_name: credhub-staging
-external_url: https://credhub.fr-stage.cloud.gov
+common_name: credhub.fr-stage.cloud.gov
 instances: 1
 azs: [z2]
 network_name: staging-concourse

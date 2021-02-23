@@ -58,6 +58,7 @@ instance_groups:
               providers:
                 - name: int
                   type: internal
+            tls: ((credhub-tls))
 
 variables:
   - name: credhub-encryption-password
@@ -68,6 +69,13 @@ variables:
     type: password
   - name: credhub-admin-user-password
     type: password
+  - name: credhub-tls
+    type: certificate
+    options: 
+      ca: ((/master-bosh-ca))
+      common_name: ((common_name))
+      alternative_names:
+      - 127.0.0.1
 
 stemcells:
   - alias: xenial
