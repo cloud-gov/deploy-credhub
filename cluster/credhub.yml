@@ -68,10 +68,16 @@ variables:
     type: password
   - name: credhub-admin-user-password
     type: password
+  # - name: /master-bosh-ca
+  #   type: certificate
+  #   options:  
+  #     ca: /main/test/identity-credentials-ca
+  #     common_name: Identity Credentials Intermediate CA
+  #     is_ca: true
   - name: credhub-tls
     type: certificate
     options: 
-      ca: ((/master-bosh-ca))
+      ca: /master-bosh-ca
       common_name: ((common_name))
       alternative_names:
       - 127.0.0.1
