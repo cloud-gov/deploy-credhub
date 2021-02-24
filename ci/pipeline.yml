@@ -107,10 +107,10 @@ resources:
     deployment: ((staging-deployment-bosh-deployment))
     ca_cert: ((common_ca_cert_store))
 
-# - name: slack
-#   type: slack-notification-docker
-#   source:
-#     url: ((slack-webhook-url))
+- name: slack
+  type: slack-notification-docker
+  source:
+    url: ((slack-webhook-url))
 
 - name: terraform-yaml
   type: s3-iam
@@ -121,10 +121,10 @@ resources:
     region_name: ((aws-region))
 
 resource_types:
-# - name: slack-notification-docker
-#   type: docker-image
-#   source:
-#     repository: cfcommunity/slack-notification-resource
+- name: slack-notification-docker
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
 
 - name: bosh-deployment
   type: docker-image
