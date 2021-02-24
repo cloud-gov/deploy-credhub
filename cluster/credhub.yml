@@ -35,10 +35,10 @@ instance_groups:
                 url: https://opsuaa.fr.cloud.gov
                 verification_key: ((/toolingbosh/opsuaa/uaa_jwt_signing_key.public_key))
                 ca_certs:
-                  - ((/master-bosh-ca))
+                  - ((/master-bosh-ca.certificate))
                 enabled: true
               mutual_tls:
-                trusted_cas: [((/master-bosh-ca))]
+                trusted_cas: [((/master-bosh-ca.certificate))]
             data_storage:
               type: postgres
               username: ((terraform_outputs.staging_credhub_rds_username))
