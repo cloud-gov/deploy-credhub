@@ -39,7 +39,7 @@ jobs:
       - deploy-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
       vars: 
-        static_ips: ((static_ips))
+        static_ips: ((staging-deployment-static-ips))
   # - task: smoke-test
   #   file: concourse-config/ci/smoke-test.yml
   #   params:
