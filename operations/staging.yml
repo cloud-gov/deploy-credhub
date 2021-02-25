@@ -15,6 +15,6 @@
   value: ((terraform_outputs.staging_credhub_rds_password))
 
 - type: replace
-  path: /vm_extensions/name=credhub-lb/cloud_properties/lb_target_groups
-  value: [((terraform_outputs.staging_credhub_lb_target_group))]  
+  path: /vm_extensions/name=credhub-lb/cloud_properties/lb_target_groups/0
+  value: ((terraform_outputs.staging_credhub_lb_target_group))
     
