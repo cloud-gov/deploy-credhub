@@ -15,7 +15,8 @@ instance_groups:
     - name: ((network_name))
     stemcell: xenial
     vm_type: ((credhub_vm_type))
-    vm_extensions: credhub-lb
+    vm_extensions: 
+    - credhub-lb
     jobs:
       - name: bpm
         release: bpm
