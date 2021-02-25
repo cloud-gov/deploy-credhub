@@ -60,6 +60,7 @@ instance_groups:
               providers:
                 - name: int
                   type: internal
+            port: 8844
             tls: ((credhub-tls))
 
 variables:
