@@ -15,6 +15,7 @@ instance_groups:
     - name: ((network_name))
     stemcell: xenial
     vm_type: ((credhub_vm_type))
+    vm_extensions: credhub-lb
     jobs:
       - name: bpm
         release: bpm
@@ -88,7 +89,6 @@ vm_extensions:
     lb_target_groups:
     - credhub-lb-target-group
   
-
 update:
   canaries: 1
   max_in_flight: 1
