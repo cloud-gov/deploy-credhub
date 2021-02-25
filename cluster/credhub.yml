@@ -42,10 +42,10 @@ instance_groups:
                 trusted_cas: [((/master-bosh-ca.certificate))]
             data_storage:
               type: postgres
-              username: ((terraform_outputs.staging_credhub_rds_username))
-              password: ((terraform_outputs.staging_credhub_rds_password))
-              host: ((terraform_outputs.staging_credhub_rds_host))
-              port: ((terraform_outputs.staging_credhub_rds_port))
+              username: ((db_username))
+              password: ((db_password))
+              host: ((db_host))
+              port: ((db_port))
               database: credhub
               require_tls: true
               tls_ca: ((postgres_ca_cert))
@@ -81,6 +81,13 @@ stemcells:
   - alias: xenial
     os: ubuntu-xenial
     version: latest
+
+vm_extensions:
+- name: credhub-lb
+  cloud_properties:
+    lb_target_groups:
+    - credhub-lb-target-group
+  
 
 update:
   canaries: 1

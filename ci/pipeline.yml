@@ -32,12 +32,14 @@ jobs:
       manifest: deploy-config/cluster/credhub.yml
       stemcells:
       - stemcell/*.tgz
-      # ops_files:
+      ops_files:
       # - deploy-config/operations/acls.yml
+      - deploy-config/operations/staging.yml
       vars_files:
       - deploy-config/variables/staging.yml
       - deploy-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
+
   # - task: smoke-test
   #   file: concourse-config/ci/smoke-test.yml
   #   params:
