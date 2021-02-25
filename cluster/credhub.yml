@@ -11,7 +11,9 @@ instance_groups:
   - name: credhub
     instances: ((instances))
     azs: ((azs))
-    networks: [{ name: ((network_name)) }]
+    networks: 
+    - name: ((network_name))
+      static_ips: ((static_ips))
     stemcell: xenial
     vm_type: ((credhub_vm_type))
     jobs:
@@ -74,6 +76,7 @@ variables:
       ca: /master-bosh-ca
       common_name: ((common_name))
       alternative_names:
+      - ((static_ips))
       - 127.0.0.1
 
 stemcells:
