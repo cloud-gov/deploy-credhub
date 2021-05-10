@@ -22,6 +22,9 @@ jobs:
     - get: deploy-config
       trigger: true
       params: {depth: 1}
+    - get: terraform-config
+      trigger: true
+      params: {depth: 1}
     - get: release
       trigger: true
     - get: stemcell
@@ -46,6 +49,7 @@ jobs:
   #     ATC_URL: https://ci.fr-stage.cloud.gov
   #     BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
   #     BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
+
   on_failure:
     put: slack
     params:
@@ -64,6 +68,26 @@ jobs:
       channel: ((slack-channel))
       username: ((slack-username))
       icon_url: ((slack-icon-url))
+
+- name: terraform-plan-credhub-staging
+  plan:
+  - in_parallel:
+    - get: terraform-config
+      passed: [deploy-staging]
+      trigger: true
+    - get: pipeline-tasks
+      trigger: true
+  - task: terraform-plan
+    file: pipeline-tasks/terraform-apply.yml
+    input_mapping:
+      terraform-templates: terraform-config
+    params:
+      TERRAFORM_ACTION: plan
+      TEMPLATE_SUBDIR: terraform
+      STACK_NAME: ((deployment_name))
+      S3_TFSTATE_BUCKET: ((staging-s3-tfstate-bucket))
+      AWS_DEFAULT_REGION: ((staging-aws-default-region))
+      CREDHUB_SERVER: ((common_name))
 
 resources:
 
@@ -88,6 +112,19 @@ resources:
     uri: https://github.com/cloud-gov/deploy-credhub
     branch: initial-deploy
     paths: [cluster/*, operations/*, variables/*]
+
+- name: terraform-config
+  type: git
+  source:
+    uri: https://github.com/cloud-gov/deploy-credhub
+    branch: initial-deploy
+    paths: [terraform/*]
+
+- name: pipeline-tasks
+  type: git
+  source:
+    uri: ((pipeline-tasks-git-url))
+    branch: ((pipeline-tasks-git-branch))
 
 - name: stemcell
   type: bosh-io-stemcell
