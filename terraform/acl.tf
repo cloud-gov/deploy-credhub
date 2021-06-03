@@ -4,6 +4,9 @@ terraform {
 }
 
 provider "credhub" {
+  credhub_server = var.credhub_server
+  client_id      = var.credhub_client_id
+  client_secret  = var.credhub_client_secret
 }
 
 resource "credhub_permission" "testuser_acl" {
