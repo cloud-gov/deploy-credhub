@@ -12,7 +12,7 @@ jobs:
       params: {depth: 1}
   - set_pipeline: self
     file: pipeline-source/ci/pipeline.yml
-    var_files: 
+    var_files:
       - pipeline-config/credhub.yml
 
 - name: deploy-staging
@@ -88,6 +88,9 @@ jobs:
       S3_TFSTATE_BUCKET: ((staging-s3-tfstate-bucket))
       AWS_DEFAULT_REGION: us-gov-west-1
       CREDHUB_SERVER: https://credhub.fr-stage.cloud.gov
+      TF_VAR_credhub_client_id: ((staging-credhub-client-id))
+      TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
+      TF_VAR_credhub_server: ((staging-credhub-server))
 
 resources:
 
