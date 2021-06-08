@@ -11,11 +11,11 @@ instance_groups:
   - name: credhub
     instances: ((instances))
     azs: ((azs))
-    networks: 
+    networks:
     - name: ((network_name))
     stemcell: xenial
     vm_type: ((credhub_vm_type))
-    vm_extensions: 
+    vm_extensions:
     - ((credhub_lb_vm_extension))
     jobs:
       - name: bpm
@@ -74,17 +74,18 @@ variables:
     type: password
   - name: credhub-tls
     type: certificate
-    options: 
+    options:
       ca: /master-bosh-ca
       common_name: ((common_name))
       alternative_names:
+      - ((common_name))
       - 127.0.0.1
 
 stemcells:
   - alias: xenial
     os: ubuntu-xenial
     version: latest
-  
+
 update:
   canaries: 1
   max_in_flight: 1
