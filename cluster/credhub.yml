@@ -81,7 +81,6 @@ variables:
       common_name: ((common_name))
       alternative_names:
         - ((common_name))
-        - ((internal_ip))
         - 127.0.0.1
 
 stemcells:
