@@ -12,11 +12,11 @@ instance_groups:
     instances: ((instances))
     azs: ((azs))
     networks:
-    - name: ((network_name))
+      - name: ((network_name))
     stemcell: xenial
     vm_type: ((credhub_vm_type))
     vm_extensions:
-    - ((credhub_lb_vm_extension))
+      - ((credhub_lb_vm_extension))
     jobs:
       - name: bpm
         release: bpm
@@ -31,7 +31,9 @@ instance_groups:
                 enabled: true
               permissions:
                 - path: /*
-                  actors: ["uaa-client:credhub_admin_client"]
+                  actors:
+                    - uaa-client:credhub_admin_client
+                    - uaa-client:credhub_admin_client_staging
                   operations: [read, write, delete, read_acl, write_acl]
             authentication:
               uaa:
@@ -78,8 +80,9 @@ variables:
       ca: /master-bosh-ca
       common_name: ((common_name))
       alternative_names:
-      - ((common_name))
-      - 127.0.0.1
+        - ((common_name))
+        - ((internal_ip))
+        - 127.0.0.1
 
 stemcells:
   - alias: xenial
