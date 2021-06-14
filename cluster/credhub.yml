@@ -6,6 +6,10 @@ releases:
     version: latest
   - name: bpm
     version: latest
+  - name: bosh-dns-aliases  
+    sha1: 55b3dced813ff9ed92a05cda02156e4b5604b273
+    url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-aliases-release?v=0.0.4
+    version: 0.0.4
 
 instance_groups:
   - name: credhub
@@ -18,6 +22,16 @@ instance_groups:
     vm_extensions:
       - ((credhub_lb_vm_extension))
     jobs:
+      - name: bosh-dns-aliases
+        release: bosh-dns-aliases
+        properties:
+        - domain: opsuaa.internal
+          targets:
+          - deployment: opsuaa
+            domain: bosh
+            instance_group: scheduler
+            network: opsuaa
+            query: '*'
       - name: bpm
         release: bpm
       - name: credhub
