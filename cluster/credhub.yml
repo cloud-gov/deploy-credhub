@@ -52,7 +52,7 @@ instance_groups:
                   operations: [read, write, delete, read_acl, write_acl]
             authentication:
               uaa:
-                url: https://opsuaa.internal
+                url: opsuaa.internal
                 verification_key: ((/toolingbosh/opsuaa/uaa_jwt_signing_key.public_key))
                 ca_certs:
                   - ((/master-bosh-ca.certificate))
