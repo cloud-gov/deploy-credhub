@@ -25,13 +25,14 @@ instance_groups:
       - name: bosh-dns-aliases
         release: bosh-dns-aliases
         properties:
-          - domain: opsuaa.internal
-            targets:
-              - deployment: opsuaa
-                domain: bosh
-                instance_group: opsuaa
-                network: default
-                query: '*'
+          aliases:
+            - domain: opsuaa.internal
+              targets:
+                - deployment: opsuaa
+                  domain: bosh
+                  instance_group: opsuaa
+                  network: default
+                  query: '*'
       - name: bpm
         release: bpm
       - name: credhub
