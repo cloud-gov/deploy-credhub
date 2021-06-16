@@ -109,6 +109,8 @@ jobs:
     - get: pipeline-tasks
       trigger: true
   - task: terraform-apply
+    input_mapping:
+      terraform-templates: terraform-config
     file: terraform-templates/terraform/terraform-apply.yml
     params:
       <<: *tf-staging
