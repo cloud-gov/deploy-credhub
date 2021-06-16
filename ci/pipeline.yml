@@ -91,6 +91,7 @@ jobs:
       TF_VAR_credhub_client_id: ((staging-credhub-client-id))
       TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
       TF_VAR_credhub_server: ((staging-credhub-server))
+      CREDHUB_CA_CERT: ((common_ca_cert_store))
   - put: slack
     params:
       text_file: terraform-state/message.txt
