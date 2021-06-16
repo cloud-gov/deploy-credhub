@@ -87,9 +87,9 @@ jobs:
       STACK_NAME: ((staging-stack-name))
       S3_TFSTATE_BUCKET: ((staging-s3-tfstate-bucket))
       AWS_DEFAULT_REGION: us-gov-west-1
-      CREDHUB_SERVER: https://credhub.fr-stage.cloud.gov
-      CREDHUB_CLIENT: ((staging-credhub-client-id))
-      CREDHUB_SECRET: ((staging-credhub-client-secret))
+      TF_VAR_credhub_server: https://credhub.fr-stage.cloud.gov
+      TF_VAR_credhub_client_id: ((staging-credhub-client-id))
+      TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
       CREDHUB_CA_CERT: ((common_ca_cert_store))
   - put: slack
     params:
