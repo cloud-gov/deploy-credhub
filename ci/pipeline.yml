@@ -81,7 +81,7 @@ jobs:
     file: pipeline-tasks/terraform-apply.yml
     input_mapping:
       terraform-templates: terraform-config
-    params:
+    params: &tf-staging
       TERRAFORM_ACTION: plan
       TEMPLATE_SUBDIR: terraform
       STACK_NAME: ((staging-stack-name))
@@ -91,6 +91,15 @@ jobs:
       TF_VAR_credhub_client_id: ((staging-credhub-client-id))
       TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
       TF_VAR_credhub_server: ((staging-credhub-server))
+  - put: slack
+    params:
+      text_file: terraform-state/message.txt
+      text:  |
+        :terraform: $BUILD_JOB_NAME needs review
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
 
 resources:
 
