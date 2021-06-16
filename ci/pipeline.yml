@@ -100,6 +100,19 @@ jobs:
       channel: ((slack-channel))
       username: ((slack-username))
       icon_url: ((slack-icon-url))
+- name: terraform-apply-staging
+  plan:
+  - in_parallel:
+    - get: terraform-config
+      trigger: true
+      passed: [terraform-plan-credhub-staging]
+    - get: pipeline-tasks
+      trigger: true
+  - task: terraform-apply
+    file: terraform-templates/terraform/terraform-apply.yml
+    params:
+      <<: *tf-staging
+      TERRAFORM_ACTION: apply
 
 resources:
 
