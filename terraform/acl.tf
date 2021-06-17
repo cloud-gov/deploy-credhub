@@ -14,8 +14,8 @@ resource "credhub_user" "concourse_pages_user" {
   username        = "concourse-pages-user"
 }
 
-resource "credhub_permission" "concourse_pages_permission" {
+resource "credhub_permission" "credhub_pages_concourse_permission" {
   path       = "/concourse/pages/*"
-  actor      = "uaa-user:dc912b22-test-4780-blah-aa5843f81868"
+  actor      = var.credhub_pages_concourse_client_actor
   operations = ["read", "write", "delete"]
 }

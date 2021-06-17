@@ -1,3 +1,8 @@
+variable "credhub_pages_concourse_client_actor" {
+  description = "The credhub client actor name. ie(uaa-client:my_client_name)"
+  type        = string
+}
+
 variable "credhub_client_id" {
   description = "The UAA client id used by the credhub"
   type        = string
