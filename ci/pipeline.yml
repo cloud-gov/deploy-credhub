@@ -88,7 +88,7 @@ jobs:
       S3_TFSTATE_BUCKET: ((staging-s3-tfstate-bucket))
       AWS_DEFAULT_REGION: us-gov-west-1
       TF_VAR_credhub_pages_concourse_client_actor: uaa-client:credhub_pages_client_staging
-      TF_VAR_credhub_doomsday_readonly_actor: uaa-client:doomsday_readonly_staging
+      TF_VAR_doomsday_readonly_actor: uaa-client:doomsday_readonly_staging
       TF_VAR_credhub_server: https://credhub.fr-stage.cloud.gov
       TF_VAR_credhub_client_id: ((staging-credhub-client-id))
       TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
