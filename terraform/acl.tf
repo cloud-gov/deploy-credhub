@@ -19,3 +19,9 @@ resource "credhub_permission" "credhub_pages_concourse_permission" {
   actor      = var.credhub_pages_concourse_client_actor
   operations = ["read", "write", "delete"]
 }
+
+resource "credhub_permission" "doomsday_readonly" {
+  path       = "/concourse/pages/*"
+  actor      = var.doomsday_readonly_actor
+  operations = ["read"]
+}
