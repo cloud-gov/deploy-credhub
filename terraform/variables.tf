@@ -20,7 +20,7 @@ variable "credhub_server" {
   type        = string
 }
 
-variable "doomsday_readonly" {
+variable "doomsday_readonly_actor" {
   description = "The credhub client actor name. ie(uaa-client:my_client_name)"
   type        = string
 }
