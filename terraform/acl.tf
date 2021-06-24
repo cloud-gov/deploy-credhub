@@ -21,7 +21,7 @@ resource "credhub_permission" "credhub_pages_concourse_permission" {
 }
 
 resource "credhub_permission" "doomsday_readonly" {
-  path       = "/concourse/pages/*"
+  path       = "/*"
   actor      = var.doomsday_readonly_actor
   operations = ["read"]
 }
