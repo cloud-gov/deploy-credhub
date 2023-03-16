@@ -245,7 +245,7 @@ resources:
   type: git
   source:
     uri: https://github.com/cloud-gov/deploy-credhub
-    branch: initial-deploy
+    branch: main
     paths: [ci/pipeline.yml]
     commit_verification_keys: ((cloud-gov-pgp-keys))
 
@@ -253,7 +253,7 @@ resources:
   type: git
   source:
     uri: https://github.com/cloud-gov/deploy-credhub
-    branch: initial-deploy
+    branch: main
     paths: [cluster/*, operations/*, variables/*]
     commit_verification_keys: ((cloud-gov-pgp-keys))
 
@@ -261,7 +261,7 @@ resources:
   type: git
   source:
     uri: https://github.com/cloud-gov/deploy-credhub
-    branch: initial-deploy
+    branch: main
     paths: [terraform/*]
     commit_verification_keys: ((cloud-gov-pgp-keys))
 
