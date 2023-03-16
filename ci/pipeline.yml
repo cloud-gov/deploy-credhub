@@ -1,0 +1,331 @@
+---
+jobs:
+
+- name: configure-pipeline
+  serial_groups: [staging, production]
+  plan:
+  - in_parallel:
+    - get: pipeline-config
+      trigger: true
+    - get: pipeline-source
+      trigger: true
+      params: {depth: 1}
+  - set_pipeline: self
+    file: pipeline-source/ci/pipeline.yml
+    var_files:
+      - pipeline-config/credhub.yml
+
+- name: deploy-staging
+  serial_groups: [staging]
+  plan:
+  - in_parallel:
+    - get: deploy-config
+      trigger: true
+      params: {depth: 1}
+    - get: terraform-config
+      trigger: true
+      params: {depth: 1}
+    - get: release
+      trigger: true
+    - get: stemcell
+      trigger: true
+    - get: terraform-yaml
+  - put: staging-deployment
+    params: &deploy-params
+      manifest: deploy-config/cluster/credhub.yml
+      stemcells:
+      - stemcell/*.tgz
+      releases:
+      - release/credhub-*.tgz
+      ops_files:
+      # - deploy-config/operations/acls.yml
+      - deploy-config/operations/staging.yml
+      vars_files:
+      - deploy-config/variables/staging.yml
+      - deploy-config/variables/postgres-tls.yml
+      - terraform-yaml/state.yml
+
+  # - task: smoke-test
+  #   file: concourse-config/ci/smoke-test.yml
+  #   params:
+  #     ATC_URL: https://ci.fr-stage.cloud.gov
+  #     BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
+  #     BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
+
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Credhub on staging
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Credhub on staging
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
+- name: terraform-plan-credhub-staging
+  plan:
+  - in_parallel:
+    - get: terraform-config
+      passed: [deploy-staging]
+      trigger: true
+    - get: pipeline-tasks
+      trigger: true
+  - task: terraform-plan
+    file: pipeline-tasks/terraform-apply.yml
+    input_mapping:
+      terraform-templates: terraform-config
+    params: &tf-staging
+      TERRAFORM_ACTION: plan
+      TEMPLATE_SUBDIR: terraform
+      STACK_NAME: ((staging-stack-name))
+      S3_TFSTATE_BUCKET: ((staging-s3-tfstate-bucket))
+      AWS_DEFAULT_REGION: us-gov-west-1
+      TF_VAR_credhub_pages_concourse_client_actor: uaa-client:credhub_pages_client_staging
+      TF_VAR_doomsday_readonly_actor: uaa-client:doomsday_readonly_staging
+      TF_VAR_pgp_credhub_actor: uaa-client:pgp_credhub_client
+      TF_VAR_credhub_server: https://credhub.fr-stage.cloud.gov
+      TF_VAR_credhub_client_id: ((staging-credhub-client-id))
+      TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
+      CREDHUB_CA_CERT: ((common_ca_cert_store))
+  - put: slack
+    params:
+      text_file: terraform-state/message.txt
+      text:  |
+        :terraform: $BUILD_JOB_NAME needs review
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+- name: terraform-apply-staging
+  plan:
+  - in_parallel:
+    - get: terraform-config
+      trigger: true
+      passed: [terraform-plan-credhub-staging]
+    - get: pipeline-tasks
+      trigger: true
+  - task: terraform-apply
+    file: pipeline-tasks/terraform-apply.yml
+    input_mapping:
+      terraform-templates: terraform-config
+    params:
+      <<: *tf-staging
+      TERRAFORM_ACTION: apply
+      
+- name: deploy-production
+  serial_groups: [production]
+  plan:
+  - in_parallel:
+    - get: deploy-config
+      trigger: true
+      params: {depth: 1}
+      passed: [deploy-staging]
+    - get: terraform-config
+      trigger: true
+      params: {depth: 1}
+      passed: [terraform-apply-staging]
+    - get: release
+      trigger: true
+      passed: [deploy-staging]
+    - get: stemcell
+      trigger: true
+      passed: [deploy-staging]
+    - get: terraform-yaml
+  - put: production-deployment
+    params: &deploy-params
+      manifest: deploy-config/cluster/credhub.yml
+      stemcells:
+      - stemcell/*.tgz
+      releases:
+      - release/credhub-*.tgz
+      ops_files:
+      # - deploy-config/operations/acls.yml
+      - deploy-config/operations/production.yml
+      vars_files:
+      - deploy-config/variables/production.yml
+      - deploy-config/variables/postgres-tls.yml
+      - terraform-yaml/state.yml
+
+  # - task: smoke-test
+  #   file: concourse-config/ci/smoke-test.yml
+  #   params:
+  #     ATC_URL: https://ci.fr.cloud.gov
+  #     BASIC_AUTH_USERNAME: ((basic-auth-username-production))
+  #     BASIC_AUTH_PASSWORD: ((basic-auth-password-production))
+
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Credhub on Production
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Credhub on Production
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+      
+- name: terraform-plan-credhub-production
+  plan:
+  - in_parallel:
+    - get: terraform-config
+      passed: [deploy-production]
+      trigger: true
+    - get: pipeline-tasks
+      trigger: true
+  - task: terraform-plan
+    file: pipeline-tasks/terraform-apply.yml
+    input_mapping:
+      terraform-templates: terraform-config
+    params: &tf-production
+      TERRAFORM_ACTION: plan
+      TEMPLATE_SUBDIR: terraform
+      STACK_NAME: ((production-stack-name))
+      S3_TFSTATE_BUCKET: ((production-s3-tfstate-bucket))
+      AWS_DEFAULT_REGION: us-gov-west-1
+      TF_VAR_credhub_pages_concourse_client_actor: uaa-client:credhub_pages_client_production
+      TF_VAR_doomsday_readonly_actor: uaa-client:doomsday_readonly_production
+      TF_VAR_pgp_credhub_actor: uaa-client:pgp_credhub_client
+      TF_VAR_credhub_server: https://credhub.fr.cloud.gov
+      TF_VAR_credhub_client_id: ((production-credhub-client-id))
+      TF_VAR_credhub_client_secret: ((production-credhub-client-secret))
+      CREDHUB_CA_CERT: ((common_ca_cert_store))
+  - put: slack
+    params:
+      text_file: terraform-state/message.txt
+      text:  |
+        :terraform: $BUILD_JOB_NAME needs review
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+- name: terraform-apply-production
+  plan:
+  - in_parallel:
+    - get: terraform-config
+      trigger: false
+      passed: [terraform-plan-credhub-production]
+    - get: pipeline-tasks
+      trigger: false
+  - task: terraform-apply
+    file: pipeline-tasks/terraform-apply.yml
+    input_mapping:
+      terraform-templates: terraform-config
+    params:
+      <<: *tf-production
+      TERRAFORM_ACTION: apply
+
+resources:
+
+- name: pipeline-config
+  type: s3-iam
+  tags: [iaas]
+  source:
+    bucket: ((concourse-creds-bucket))
+    region_name: ((concourse-creds-bucket-region))
+    versioned_file: credhub.yml
+
+- name: pipeline-source
+  type: git
+  source:
+    uri: https://github.com/cloud-gov/deploy-credhub
+    branch: initial-deploy
+    paths: [ci/pipeline.yml]
+    commit_verification_keys: ((cloud-gov-pgp-keys))
+
+- name: deploy-config
+  type: git
+  source:
+    uri: https://github.com/cloud-gov/deploy-credhub
+    branch: initial-deploy
+    paths: [cluster/*, operations/*, variables/*]
+    commit_verification_keys: ((cloud-gov-pgp-keys))
+
+- name: terraform-config
+  type: git
+  source:
+    uri: https://github.com/cloud-gov/deploy-credhub
+    branch: initial-deploy
+    paths: [terraform/*]
+    commit_verification_keys: ((cloud-gov-pgp-keys))
+
+- name: pipeline-tasks
+  type: git
+  source:
+    uri: ((pipeline-tasks-git-url))
+    branch: ((pipeline-tasks-git-branch))
+    commit_verification_keys: ((cloud-gov-pgp-keys))
+
+- name: stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-aws-xen-hvm-ubuntu-bionic-go_agent
+
+- name: release
+  type: github-release
+  source:
+    owner: pivotal
+    repository: credhub-release
+
+- name: staging-deployment
+  type: bosh-deployment
+  source:
+    target: ((staging-deployment-bosh-target))
+    client: ci
+    client_secret: ((tooling_bosh_uaa_ci_client_secret))
+    deployment: ((staging-deployment-bosh-deployment))
+    ca_cert: ((common_ca_cert_store))
+
+- name: production-deployment
+  type: bosh-deployment
+  source:
+    target: ((production-deployment-bosh-target))
+    client: ci
+    client_secret: ((tooling_bosh_uaa_ci_client_secret))
+    deployment: ((production-deployment-bosh-deployment))
+    ca_cert: ((common_ca_cert_store))
+
+- name: slack
+  type: slack-notification-docker
+  source:
+    url: ((slack-webhook-url))
+
+- name: terraform-yaml
+  type: s3-iam
+  tags: [iaas]
+  source:
+    bucket: ((tf-state-bucket))
+    versioned_file: ((tf-state-file))
+    region_name: ((aws-region))
+
+resource_types:
+- name: slack-notification-docker
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+
+- name: bosh-deployment
+  type: docker-image
+  source:
+    repository: cloudfoundry/bosh-deployment-resource
+
+- name: s3-iam
+  type: docker-image
+  source:
+    repository: 18fgsa/s3-resource

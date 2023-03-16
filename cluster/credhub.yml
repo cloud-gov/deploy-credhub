@@ -1,0 +1,113 @@
+---
+name: ((deployment_name))
+
+releases:
+  - name: credhub
+    version: latest
+  - name: bpm
+    version: latest
+  - name: bosh-dns-aliases
+    sha1: 55b3dced813ff9ed92a05cda02156e4b5604b273
+    url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-aliases-release?v=0.0.4
+    version: 0.0.4
+
+instance_groups:
+  - name: credhub
+    instances: ((instances))
+    azs: ((azs))
+    networks:
+      - name: ((network_name))
+    stemcell: bionic
+    persistent_disk_type: 5GB
+    vm_type: ((credhub_vm_type))
+    vm_extensions:
+      - ((credhub_lb_vm_extension))
+    jobs:
+      - name: bosh-dns-aliases
+        release: bosh-dns-aliases
+        properties:
+          aliases:
+            - domain: opsuaa.internal
+              targets:
+                - deployment: opsuaa
+                  domain: bosh
+                  instance_group: opsuaa
+                  network: opsuaa
+                  query: '*'
+      - name: bpm
+        release: bpm
+      - name: credhub
+        release: credhub
+        properties:
+          bpm:
+            enabled: true
+          credhub:
+            authorization:
+              acls:
+                enabled: true
+              permissions:
+                - path: /*
+                  actors:
+                    - uaa-client:credhub_admin_client_production
+                    - uaa-client:credhub_admin_client_staging
+                  operations: [read, write, delete, read_acl, write_acl]
+            authentication:
+              uaa:
+                url: https://opsuaa.internal:8443
+                verification_key: ((/toolingbosh/opsuaa/uaa_jwt_signing_key.public_key))
+                ca_certs:
+                  - ((/master-bosh-ca.certificate))
+                enabled: true
+              mutual_tls:
+                trusted_cas: [((/master-bosh-ca.certificate))]
+            data_storage:
+              type: postgres
+              username: ((db_username))
+              password: ((db_password))
+              host: ((db_host))
+              port: ((db_port))
+              database: credhub
+              require_tls: true
+              tls_ca: ((postgres_ca_cert))
+            encryption:
+              keys:
+                - provider_name: int
+                  key_properties:
+                    encryption_password: ((credhub-encryption-password))
+                  active: true
+              providers:
+                - name: int
+                  type: internal
+            port: 8844
+            tls: ((credhub-tls))
+
+variables:
+  - name: credhub-encryption-password
+    type: password
+    options:
+      length: 40
+  - name: credhub-admin-client-password
+    type: password
+  - name: credhub-admin-user-password
+    type: password
+  - name: credhub-pages-client-password
+    type: password
+  - name: credhub-tls
+    type: certificate
+    options:
+      ca: /master-bosh-ca
+      common_name: ((common_name))
+      alternative_names:
+        - ((common_name))
+        - 127.0.0.1
+
+stemcells:
+  - alias: bionic
+    os: ubuntu-bionic
+    version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  update_watch_time: 120000
+  canary_watch_time: 120000
