@@ -17,7 +17,7 @@ instance_groups:
     azs: ((azs))
     networks:
       - name: ((network_name))
-    stemcell: bionic
+    stemcell: default
     persistent_disk_type: 5GB
     vm_type: ((credhub_vm_type))
     vm_extensions:
@@ -102,8 +102,8 @@ variables:
         - 127.0.0.1
 
 stemcells:
-  - alias: bionic
-    os: ubuntu-bionic
+  - alias: default
+    os: ubuntu-jammy
     version: latest
 
 update:
