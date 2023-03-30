@@ -31,3 +31,9 @@ resource "credhub_permission" "pgp" {
   actor      = var.pgp_credhub_actor
   operations = ["read","write","delete"]
 }
+
+resource "credhub_permission" "pages_gpg" {
+  path       = "/concourse/pages/cloud-gov-pages-gpg-keys"
+  actor      = var.pgp_credhub_actor
+  operations = ["read","write","delete"]
+}
