@@ -1,6 +1,6 @@
 - type: replace
   path: /instance_groups/name=credhub/jobs/name=credhub/properties/credhub/data_storage/host
-  value: ((terraform_outputs.staging_credhub_rds_host))
+  value: ((terraform_outputs.staging_credhub_rds_host)) 
 
 - type: replace
   path: /instance_groups/name=credhub/jobs/name=credhub/properties/credhub/data_storage/port
