@@ -7,3 +7,4 @@ credhub_vm_type: t3.medium
 credhub_lb_vm_extension: production-credhub-lb
 pipeline-tasks-git-url: https://github.com/18F/cg-pipeline-tasks
 pipeline-tasks-git-branch: master
+default_ca: /westa-hub-protobosh/toolingbosh/default_ca
