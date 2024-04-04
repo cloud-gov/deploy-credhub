@@ -97,6 +97,9 @@ variables:
     ca: ((protobosh_ca.ca))
     certificate: ((protobosh_ca.certificate))
     private_key: ((protobosh_ca.private_key))
+    options:
+      is_ca: true
+      common_name: "*.westa.cloud.gov"
   - name: credhub-tls
     type: certificate
     options:
