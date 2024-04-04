@@ -92,10 +92,15 @@ variables:
     type: password
   - name: credhub-pages-client-password
     type: password
+  - name: protobosh-ca
+    type: certificate
+    ca: ((protobosh_ca.ca))
+    certificate: ((protobosh_ca.certificate))
+    private_key: ((protobosh_ca.private_key))
   - name: credhub-tls
     type: certificate
     options:
-      ca: protobosh_ca
+      ca: protobosh-ca
       common_name: ((common_name))
       alternative_names:
         - ((common_name))
