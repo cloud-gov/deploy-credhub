@@ -54,6 +54,7 @@ bosh interpolate ${workspace}/cloud-gov/deploy-credhub/bosh-deployment/manifest.
   --vars-store ${config_dir}/secrets.yml
 
 aws s3 cp "s3://${STACK_NAME}-terraform-state/${STACK_NAME}/state.yml" ${config_dir}/state.yml --sse AES256
+aws s3 cp "s3://${STACK_NAME}-cloud-gov-varz/${STACK_NAME}-protobosh.yml" ${config_dir}/protobosh.yml --sse AES256
 
 
 pushd $workspace
@@ -61,6 +62,7 @@ pushd $workspace
     -o cloud-gov/deploy-credhub/operations/production.yml \
     -l cloud-gov/deploy-credhub/variables/westa.yml \
     -l cloud-gov/deploy-credhub/variables/postgres-tls.yml \
+    -l ${config_dir}/protobosh.yml \
     -l ${config_dir}/secrets.yml \
     -l ${config_dir}/state.yml
 popd
