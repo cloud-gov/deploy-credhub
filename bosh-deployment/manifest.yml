@@ -95,7 +95,7 @@ variables:
   - name: credhub-tls
     type: certificate
     options:
-      ca: ((protobosh_ca))
+      ca: /protobosh_ca
       common_name: ((common_name))
       alternative_names:
         - ((common_name))
