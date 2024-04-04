@@ -50,7 +50,7 @@ config_dir=${workspace}/config
 rm -fr $config_dir
 mkdir -p $config_dir
 
-bosh interpolate ${workspace}/cloud-gov/deply-credhub/bosh-deployment/manifest.yml \
+bosh interpolate ${workspace}/cloud-gov/deploy-credhub/bosh-deployment/manifest.yml \
   --vars-store ${config_dir}/secrets.yml
 
 aws s3 cp "s3://${STACK_NAME}-terraform-state/${STACK_NAME}/state.yml" ${config_dir}/state.yml --sse AES256
