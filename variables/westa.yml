@@ -1,0 +1,9 @@
+deployment_name: credhub
+common_name: credhub.westa.cloud.gov
+instances: 1
+azs: [z1]
+network_name: production-credhub
+credhub_vm_type: t3.medium
+credhub_lb_vm_extension: production-credhub-lb
+pipeline-tasks-git-url: https://github.com/18F/cg-pipeline-tasks
+pipeline-tasks-git-branch: master
