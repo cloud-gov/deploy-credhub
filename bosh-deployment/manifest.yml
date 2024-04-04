@@ -7,6 +7,8 @@ releases:
   - name: bpm
     version: latest
   - name: bosh-dns-aliases
+    sha1: 55b3dced813ff9ed92a05cda02156e4b5604b273
+    url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-aliases-release?v=0.0.4
     version: 0.0.4
 
 instance_groups:
