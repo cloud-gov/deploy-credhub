@@ -1,5 +1,5 @@
 ---
-name: ((deployment_name))
+name: ((credhub.deployment_name))
 
 releases:
   - name: credhub
@@ -13,15 +13,15 @@ releases:
 
 instance_groups:
   - name: credhub
-    instances: ((instances))
-    azs: ((azs))
+    instances: ((credhub.instances))
+    azs: ((credhub.azs))
     networks:
-      - name: ((network_name))
+      - name: ((credhub.network_name))
     stemcell: default
     persistent_disk_type: 5GB
-    vm_type: ((instance_type))
+    vm_type: ((credhub.instance_type))
     vm_extensions:
-      - ((credhub_lb_vm_extension))
+      - ((credhub.lb_vm_extension))
     jobs:
       - name: bosh-dns-aliases
         release: bosh-dns-aliases
@@ -92,21 +92,13 @@ variables:
     type: password
   - name: credhub-pages-client-password
     type: password
-  - name: root-ca
-    type: certificate
-    ca: ((/root-ca.ca))
-    certificate: ((/root-ca.certificate))
-    private_key: ((/root-ca.private_key))
-    options:
-      is_ca: true
-      common_name: "*.westa.cloud.gov"
   - name: credhub-tls
     type: certificate
     options:
-      ca: root-ca
-      common_name: ((common_name))
+      ca: /root-ca
+      common_name: ((credhub.common_name))
       alternative_names:
-        - ((common_name))
+        - ((credhub.common_name))
         - 127.0.0.1
 
 stemcells:
