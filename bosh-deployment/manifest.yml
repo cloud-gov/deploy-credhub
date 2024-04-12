@@ -48,8 +48,7 @@ instance_groups:
               permissions:
                 - path: /*
                   actors:
-                    - uaa-client:credhub_admin_client_production
-                    - uaa-client:credhub_admin_client_staging
+                    - uaa-client:credhub_admin_client
                   operations: [read, write, delete, read_acl, write_acl]
             authentication:
               uaa:
