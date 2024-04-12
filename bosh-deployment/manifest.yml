@@ -90,8 +90,6 @@ variables:
     type: password
   - name: credhub-admin-user-password
     type: password
-  - name: credhub-pages-client-password
-    type: password
   - name: credhub-tls
     type: certificate
     options:
