@@ -55,10 +55,10 @@ instance_groups:
                 url: https://opsuaa.internal:8443
                 verification_key: ((/tooling/opsuaa/uaa_jwt_signing_key.public_key))
                 ca_certs:
-                  - ((/root-ca.certificate))
+                  - ((/root_ca.certificate))
                 enabled: true
               mutual_tls:
-                trusted_cas: [((/root-ca.certificate))]
+                trusted_cas: [((/root_ca.certificate))]
             data_storage:
               type: postgres
               username: ((db_username))
@@ -92,7 +92,7 @@ variables:
   - name: credhub-tls
     type: certificate
     options:
-      ca: /root-ca
+      ca: /root_ca
       common_name: ((credhub.common_name))
       alternative_names:
         - ((credhub.common_name))
