@@ -61,15 +61,6 @@ jobs:
       channel: ((slack-channel))
       username: ((slack-username))
       icon_url: ((slack-icon-url))
-  on_success:
-    put: slack
-    params:
-      text: |
-        :white_check_mark: Successfully deployed Credhub on staging
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
 
 - name: terraform-plan-credhub-staging
   plan:
@@ -92,6 +83,7 @@ jobs:
       TF_VAR_credhub_pages_concourse_client_actor: uaa-client:credhub_pages_client_staging
       TF_VAR_doomsday_readonly_actor: uaa-client:doomsday_readonly_staging
       TF_VAR_pgp_credhub_actor: uaa-client:pgp_credhub_client
+      TF_VAR_opensearch_proxy_ci_credhub_actor: uaa-client:opensearch_proxy_ci_client
       TF_VAR_credhub_server: https://credhub.fr-stage.cloud.gov
       TF_VAR_credhub_client_id: ((staging-credhub-client-id))
       TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
@@ -171,15 +163,6 @@ jobs:
       channel: ((slack-channel))
       username: ((slack-username))
       icon_url: ((slack-icon-url))
-  on_success:
-    put: slack
-    params:
-      text: |
-        :white_check_mark: Successfully deployed Credhub on Production
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
 
 - name: terraform-plan-credhub-production
   plan:
@@ -205,6 +188,7 @@ jobs:
       TF_VAR_credhub_server: https://credhub.fr.cloud.gov
       TF_VAR_credhub_client_id: ((production-credhub-client-id))
       TF_VAR_credhub_client_secret: ((production-credhub-client-secret))
+      TF_VAR_opensearch_proxy_ci_credhub_actor: uaa-client:opensearch_proxy_ci_client
       CREDHUB_CA_CERT: ((common_ca_cert_store))
   - put: slack
     params:

@@ -37,3 +37,9 @@ resource "credhub_permission" "pages_gpg" {
   actor      = var.pgp_credhub_actor
   operations = ["read","write","delete"]
 }
+
+resource "credhub_permission" "opensearch_proxy_ci" {
+  path       = "/concourse/main/opensearch-dashboards-cf-auth-proxy/*"
+  actor      = var.opensearch_proxy_ci_credhub_actor
+  operations = ["read","write","delete"]
+}
