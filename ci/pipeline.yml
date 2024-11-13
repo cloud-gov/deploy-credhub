@@ -83,6 +83,7 @@ jobs:
       TF_VAR_credhub_pages_concourse_client_actor: uaa-client:credhub_pages_client_staging
       TF_VAR_doomsday_readonly_actor: uaa-client:doomsday_readonly_staging
       TF_VAR_pgp_credhub_actor: uaa-client:pgp_credhub_client
+      TF_VAR_pages_user_agent: uaa-client:pages_user_agent_credhub_client
       TF_VAR_opensearch_proxy_ci_credhub_actor: uaa-client:opensearch_proxy_ci_client
       TF_VAR_credhub_server: https://credhub.fr-stage.cloud.gov
       TF_VAR_credhub_client_id: ((staging-credhub-client-id))
@@ -185,6 +186,7 @@ jobs:
       TF_VAR_credhub_pages_concourse_client_actor: uaa-client:credhub_pages_client_production
       TF_VAR_doomsday_readonly_actor: uaa-client:doomsday_readonly_production
       TF_VAR_pgp_credhub_actor: uaa-client:pgp_credhub_client
+      TF_VAR_pages_user_agent: uaa-client:pages_user_agent_credhub_client
       TF_VAR_credhub_server: https://credhub.fr.cloud.gov
       TF_VAR_credhub_client_id: ((production-credhub-client-id))
       TF_VAR_credhub_client_secret: ((production-credhub-client-secret))
