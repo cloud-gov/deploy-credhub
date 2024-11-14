@@ -44,8 +44,8 @@ resource "credhub_permission" "opensearch_proxy_ci" {
   operations = ["read","write","delete"]
 }
 
-resource "credhub_permission" "pages_user_agent" {
-  path       = "/concourse/pages/cf-build-tasks/*"
-  actor      = var.pages_user_agent
-  operations = ["read","write","delete"]
-}
+#resource "credhub_permission" "pages_user_agent" {
+#  path       = "/concourse/pages/cf-build-tasks/*"
+#  actor      = var.pages_user_agent
+#  operations = ["read","write","delete"]
+#}
