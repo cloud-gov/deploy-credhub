@@ -40,3 +40,7 @@ variable "pages_user_agent" {
   description = "The credhub client actor name. ie(uaa-client:my_client_name)"
   type        = string
 }
+variable "opensearch_ci_credhub_actor" {
+  description = "The credhub client actor name. ie(uaa-client:my_client_name)"
+  type        = string
+}

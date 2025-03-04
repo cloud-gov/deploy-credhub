@@ -85,6 +85,7 @@ jobs:
       TF_VAR_pgp_credhub_actor: uaa-client:pgp_credhub_client
       TF_VAR_pages_user_agent: uaa-client:pages_user_agent_credhub_client
       TF_VAR_opensearch_proxy_ci_credhub_actor: uaa-client:opensearch_proxy_ci_client
+      TF_VAR_opensearch_ci_credhub_actor: uaa-client:opensearch_ci_client
       TF_VAR_credhub_server: https://credhub.fr-stage.cloud.gov
       TF_VAR_credhub_client_id: ((staging-credhub-client-id))
       TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
@@ -191,6 +192,7 @@ jobs:
       TF_VAR_credhub_client_id: ((production-credhub-client-id))
       TF_VAR_credhub_client_secret: ((production-credhub-client-secret))
       TF_VAR_opensearch_proxy_ci_credhub_actor: uaa-client:opensearch_proxy_ci_client
+      TF_VAR_opensearch_ci_credhub_actor: uaa-client:opensearch_ci_client
       CREDHUB_CA_CERT: ((common_ca_cert_store))
   - put: slack
     params:
