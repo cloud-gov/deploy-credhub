@@ -49,3 +49,9 @@ resource "credhub_permission" "pages_user_agent" {
   actor      = var.pages_user_agent
   operations = ["read","write","delete"]
 }
+
+resource "credhub_permission" "opensearch_ci" {
+  path       = "/concourse/main/deploy-logs-opensearch/*"
+  actor      = var.opensearch_proxy_ci_credhub_actor
+  operations = ["read","write","delete"]
+}
