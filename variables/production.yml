@@ -1,6 +1,6 @@
 deployment_name: credhub-production
 common_name: credhub.fr.cloud.gov
-instances: 3
+instances: 2
 azs: [z1,z2]
 network_name: production-credhub
 credhub_vm_type: t3.medium
