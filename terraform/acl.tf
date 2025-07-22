@@ -38,6 +38,12 @@ resource "credhub_permission" "pages_gpg" {
   operations = ["read", "write", "delete"]
 }
 
+resource "credhub_permission" "pgp_pages_read" {
+  path       = "/concourse/main/cloud-gov-pgp-keys"
+  actor      = var.credhub_pages_concourse_client_actor
+  operations = ["read"]
+}
+
 resource "credhub_permission" "opensearch_proxy_ci" {
   path       = "/concourse/main/opensearch-dashboards-cf-auth-proxy/*"
   actor      = var.opensearch_proxy_ci_credhub_actor
