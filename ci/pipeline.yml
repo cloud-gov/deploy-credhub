@@ -89,7 +89,7 @@ jobs:
       TF_VAR_credhub_server: https://credhub.fr-stage.cloud.gov
       TF_VAR_credhub_client_id: ((staging-credhub-client-id))
       TF_VAR_credhub_client_secret: ((staging-credhub-client-secret))
-      CREDHUB_CA_CERT: ((common_ca_cert_store))
+      CREDHUB_CA_CERT: ((bosh-director-info.tooling.ca_cert))
   - put: slack
     params:
       text_file: terraform-state/message.txt
@@ -193,7 +193,7 @@ jobs:
       TF_VAR_credhub_client_secret: ((production-credhub-client-secret))
       TF_VAR_opensearch_proxy_ci_credhub_actor: uaa-client:opensearch_proxy_ci_client
       TF_VAR_opensearch_ci_credhub_actor: uaa-client:opensearch_ci_client
-      CREDHUB_CA_CERT: ((common_ca_cert_store))
+      CREDHUB_CA_CERT: ((bosh-director-info.tooling.ca_cert))
   - put: slack
     params:
       text_file: terraform-state/message.txt
@@ -274,20 +274,21 @@ resources:
 - name: staging-deployment
   type: bosh-deployment
   source:
-    target: ((staging-deployment-bosh-target))
-    client: ci
-    client_secret: ((tooling_bosh_uaa_ci_client_secret))
+    ca_cert: ((bosh-director-info.tooling.ca_cert))
+    client: ((bosh-director-info.tooling.client))
+    client_secret: ((bosh-director-info.tooling.client_secret))
+    target: ((bosh-director-info.tooling.environment))
     deployment: ((staging-deployment-bosh-deployment))
-    ca_cert: ((common_ca_cert_store))
+
 
 - name: production-deployment
   type: bosh-deployment
   source:
-    target: ((production-deployment-bosh-target))
-    client: ci
-    client_secret: ((tooling_bosh_uaa_ci_client_secret))
+    ca_cert: ((bosh-director-info.tooling.ca_cert))
+    client: ((bosh-director-info.tooling.client))
+    client_secret: ((bosh-director-info.tooling.client_secret))
+    target: ((bosh-director-info.tooling.environment))
     deployment: ((production-deployment-bosh-deployment))
-    ca_cert: ((common_ca_cert_store))
 
 - name: slack
   type: slack-notification-docker
